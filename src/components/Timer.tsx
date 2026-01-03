@@ -13,7 +13,7 @@ const Timer: React.FC<TimerProps> = ({ taskId, onTimeUpdate, initialTime = 0 }) 
     const [seconds, setSeconds] = useState(initialTime);
     const [isRunning, setIsRunning] = useState(false);
     const [mode, setMode] = useState<'focus' | 'short-break' | 'long-break'>('focus');
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const intervalRef = useRef<number | null>(null);  // ← Changed from NodeJS.Timeout
 
     // Pomodoro durations in seconds
     const durations = {

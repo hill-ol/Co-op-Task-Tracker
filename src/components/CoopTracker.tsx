@@ -9,31 +9,45 @@ import '../styles/CoopTracker.css';
 const STORAGE_KEY = 'coop-tracker-state';
 
 const CoopTracker: React.FC = () => {
-    const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
-    const [taskNotes, setTaskNotes] = useState<Record<string, TaskNote>>({});
-    const [currentView, setCurrentView] = useState<'calendar' | 'stats' | 'resources'>('calendar');
-    const [editingNote, setEditingNote] = useState<string | null>(null);
-    const [noteText, setNoteText] = useState<string>('');
-
-    // Load state from localStorage on mount
-    useEffect(() => {
+    const [completedTasks, setCompletedTasks] = useState<Set<string>>(() => {
+        // Initialize from localStorage on mount
         const savedState = localStorage.getItem(STORAGE_KEY);
         if (savedState) {
             try {
                 const state: AppState = JSON.parse(savedState);
-                setCompletedTasks(new Set(state.completedTasks));
-                setTaskNotes(state.taskNotes);
+                return new Set(state.completedTasks);
             } catch (error) {
                 console.error('Error loading saved state:', error);
             }
         }
-    }, []);
+        return new Set();
+    });
+
+    const [taskNotes, setTaskNotes] = useState<Record<string, TaskNote>>(() => {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            try {
+                const state: AppState = JSON.parse(savedState);
+                return state.taskNotes;
+            } catch (error) {
+                console.error('Error loading saved state:', error);
+            }
+        }
+        return {};
+    });
+
+    const [currentView, setCurrentView] = useState<'calendar' | 'stats' | 'resources'>('calendar');
+    const [editingNote, setEditingNote] = useState<string | null>(null);
+    const [noteText, setNoteText] = useState<string>('');
 
     // Save state to localStorage whenever it changes
     useEffect(() => {
         const state: AppState = {
             completedTasks: Array.from(completedTasks),
             taskNotes: taskNotes,
+            customTasks: [],
+            timerSessions: [],
+            taskTimeSpent: {}
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }, [completedTasks, taskNotes]);
@@ -77,6 +91,7 @@ const CoopTracker: React.FC = () => {
                 },
             }));
         } else if (editingNote && !noteText.trim()) {
+            // Delete note if empty
             setTaskNotes(prev => {
                 const newNotes = { ...prev };
                 delete newNotes[editingNote];
@@ -257,16 +272,41 @@ const CoopTracker: React.FC = () => {
                                                                 )}
                                                             </p>
                                                             {task.leetcode && (
-                                                                <a
-                                                                    href={task.leetcode.url}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="leetcode-link"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                >
-                                                                    <ExternalLink className="external-link-icon" />
-                                                                    Solve on LeetCode
-                                                                </a>
+                                                                <>
+                                                                    <a
+                                                                        href={task.leetcode.url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="leetcode-link"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        <ExternalLink className="external-link-icon" />
+                                                                        Solve on LeetCode
+                                                                    </a>
+                                                                    {task.leetcode.patterns && task.leetcode.patterns.length > 0 && (
+                                                                        <div className="pattern-tags">
+                                                                            {task.leetcode.patterns.map((pattern, idx) => (
+                                                                                <span key={idx} className="pattern-tag">
+                                          {pattern}
+                                        </span>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                    {task.leetcode.companies && task.leetcode.companies.length > 0 && (
+                                                                        <div className="company-tags">
+                                                                            {task.leetcode.companies.slice(0, 5).map((company, idx) => (
+                                                                                <span key={idx} className="company-tag">
+                                          {company}
+                                        </span>
+                                                                            ))}
+                                                                            {task.leetcode.companies.length > 5 && (
+                                                                                <span className="company-tag-more">
+                                          +{task.leetcode.companies.length - 5} more
+                                        </span>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                </>
                                                             )}
                                                         </div>
                                                     </div>

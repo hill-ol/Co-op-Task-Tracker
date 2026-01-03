@@ -945,3 +945,43 @@
         max-height: 90vh;
     }
 }
+
+/* Pattern and Company Tags */
+.pattern-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.pattern-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 500;
+}
+
+.company-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.company-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.company-tag-more {
+    font-size: 11px;
+    padding: 2px 6px;
+    color: #6b7280;
+    font-style: italic;
+}
