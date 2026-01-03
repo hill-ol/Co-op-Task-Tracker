@@ -70,6 +70,9 @@
     transition: all 0.2s;
     background: #f3f4f6;
     color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .toggle-button:hover {
@@ -79,6 +82,11 @@
 .toggle-button.active {
     background: #4f46e5;
     color: white;
+}
+
+.button-icon {
+    width: 16px;
+    height: 16px;
 }
 
 /* Progress Bar */
@@ -270,6 +278,38 @@
     color: #312e81;
 }
 
+/* Difficulty Badges */
+.difficulty-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
+}
+
+.difficulty-easy {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.difficulty-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.difficulty-hard {
+    background: #fecaca;
+    color: #991b1b;
+}
+
+.premium-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
+    background: #fae8ff;
+    color: #86198f;
+}
+
 .priority-badge {
     font-size: 12px;
     padding: 2px 8px;
@@ -277,6 +317,12 @@
     font-weight: 500;
     background: #fee2e2;
     color: #991b1b;
+}
+
+.task-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .task-text {
@@ -288,6 +334,31 @@
 .task-text.task-completed {
     text-decoration: line-through;
     color: #6b7280;
+}
+
+.leetcode-number {
+    font-weight: 600;
+    color: #f97316;
+}
+
+.leetcode-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #4f46e5;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.leetcode-link:hover {
+    color: #4338ca;
+    text-decoration: underline;
+}
+
+.external-link-icon {
+    width: 14px;
+    height: 14px;
 }
 
 /* Note Button */
@@ -729,6 +800,110 @@
     color: #14532d;
 }
 
+/* Resources View */
+.resources-view {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.resources-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+}
+
+.resources-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111827;
+    margin: 0 0 8px 0;
+}
+
+.resources-subtitle {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.resource-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+
+.resource-card:hover {
+    border-color: #4f46e5;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+    transform: translateY(-2px);
+}
+
+.resource-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.resource-type-badge {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.resource-type-website {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.resource-type-course {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.resource-type-tool {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.resource-type-book {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.resource-link-icon {
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+}
+
+.resource-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+}
+
+.resource-description {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .header-content {
@@ -757,7 +932,8 @@
     }
 
     .category-grid,
-    .goals-grid {
+    .goals-grid,
+    .resources-grid {
         grid-template-columns: 1fr;
     }
 

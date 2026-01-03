@@ -1,7 +1,8 @@
 // src/components/CoopTracker.tsx
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, CheckCircle2, Circle, Award, Code, Briefcase, Users, BookOpen, StickyNote, X } from 'lucide-react';
+import { Calendar, CheckCircle2, Circle, Award, Code, Briefcase, Users, BookOpen, StickyNote, X, ExternalLink, BookMarked } from 'lucide-react';
 import { weeks } from '../data/weeks';
+import { resources } from '../data/resources';
 import type {Category, CategoryConfig, Task, TaskNote, AppState} from '../types';
 import '../styles/CoopTracker.css';
 
@@ -10,7 +11,7 @@ const STORAGE_KEY = 'coop-tracker-state';
 const CoopTracker: React.FC = () => {
     const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
     const [taskNotes, setTaskNotes] = useState<Record<string, TaskNote>>({});
-    const [currentView, setCurrentView] = useState<'calendar' | 'stats'>('calendar');
+    const [currentView, setCurrentView] = useState<'calendar' | 'stats' | 'resources'>('calendar');
     const [editingNote, setEditingNote] = useState<string | null>(null);
     const [noteText, setNoteText] = useState<string>('');
 
@@ -76,7 +77,6 @@ const CoopTracker: React.FC = () => {
                 },
             }));
         } else if (editingNote && !noteText.trim()) {
-            // Delete note if empty
             setTaskNotes(prev => {
                 const newNotes = { ...prev };
                 delete newNotes[editingNote];
@@ -160,6 +160,13 @@ const CoopTracker: React.FC = () => {
                         >
                             Progress Stats
                         </button>
+                        <button
+                            onClick={() => setCurrentView('resources')}
+                            className={`toggle-button ${currentView === 'resources' ? 'active' : ''}`}
+                        >
+                            <BookMarked className="button-icon" />
+                            Resources
+                        </button>
                     </div>
 
                     {/* Progress Bar */}
@@ -222,15 +229,46 @@ const CoopTracker: React.FC = () => {
                                                             <span className={`category-badge category-${config.color}`}>
                                 {config.label}
                               </span>
-                                                            {task.priority === 'high' && (
+                                                            {task.leetcode && (
+                                                                <>
+                                  <span className={`difficulty-badge difficulty-${task.leetcode.difficulty.toLowerCase()}`}>
+                                    {task.leetcode.difficulty}
+                                  </span>
+                                                                    {task.leetcode.isPremium && (
+                                                                        <span className="premium-badge">Premium</span>
+                                                                    )}
+                                                                </>
+                                                            )}
+                                                            {task.priority === 'high' && !task.leetcode && (
                                                                 <span className="priority-badge">
                                   High Priority
                                 </span>
                                                             )}
                                                         </div>
-                                                        <p className={`task-text ${isCompleted ? 'task-completed' : ''}`}>
-                                                            {task.text}
-                                                        </p>
+                                                        <div className="task-text-wrapper">
+                                                            <p className={`task-text ${isCompleted ? 'task-completed' : ''}`}>
+                                                                {task.leetcode ? (
+                                                                    <>
+                                                                        <span className="leetcode-number">#{task.leetcode.number}</span>
+                                                                        {" "}{task.leetcode.name}
+                                                                    </>
+                                                                ) : (
+                                                                    task.text
+                                                                )}
+                                                            </p>
+                                                            {task.leetcode && (
+                                                                <a
+                                                                    href={task.leetcode.url}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="leetcode-link"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                >
+                                                                    <ExternalLink className="external-link-icon" />
+                                                                    Solve on LeetCode
+                                                                </a>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <button
                                                         onClick={(e) => openNoteEditor(task.id, e)}
@@ -267,7 +305,7 @@ const CoopTracker: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                ) : (
+                ) : currentView === 'stats' ? (
                     /* Stats View */
                     <div className="stats-view">
                         <div className="stats-card">
@@ -334,6 +372,35 @@ const CoopTracker: React.FC = () => {
                                     <p className="goal-number">45-50</p>
                                     <p className="goal-description">Target companies by end of April</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    /* Resources View */
+                    <div className="resources-view">
+                        <div className="resources-card">
+                            <h2 className="resources-title">Interview Prep Resources</h2>
+                            <p className="resources-subtitle">Curated tools and platforms to help you ace your technical interviews</p>
+
+                            <div className="resources-grid">
+                                {resources.map((resource, index) => (
+                                    <a
+                                        key={index}
+                                        href={resource.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="resource-card"
+                                    >
+                                        <div className="resource-header">
+                                            <div className={`resource-type-badge resource-type-${resource.type}`}>
+                                                {resource.type}
+                                            </div>
+                                            <ExternalLink className="resource-link-icon" />
+                                        </div>
+                                        <h3 className="resource-name">{resource.name}</h3>
+                                        <p className="resource-description">{resource.description}</p>
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>

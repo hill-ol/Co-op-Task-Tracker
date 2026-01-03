@@ -11,11 +11,22 @@ export type Category =
     | 'project'
     | 'research';
 
+export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+
+export interface LeetCodeProblem {
+    number: number;
+    name: string;
+    difficulty: Difficulty;
+    url: string;
+    isPremium?: boolean;
+}
+
 export interface Task {
     id: string;
     category: Category;
     text: string;
     priority: Priority;
+    leetcode?: LeetCodeProblem;
 }
 
 export interface Week {
@@ -51,4 +62,11 @@ export interface TaskNote {
 export interface AppState {
     completedTasks: string[];
     taskNotes: Record<string, TaskNote>;
+}
+
+export interface Resource {
+    name: string;
+    description: string;
+    url: string;
+    type: 'website' | 'course' | 'tool' | 'book';
 }
