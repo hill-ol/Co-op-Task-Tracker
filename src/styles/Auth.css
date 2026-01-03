@@ -1,0 +1,150 @@
+/* src/styles/Auth.css */
+.auth-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-email {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.sign-in-button,
+.sign-out-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sign-in-button {
+    background: #4f46e5;
+    color: white;
+}
+
+.sign-in-button:hover {
+    background: #4338ca;
+}
+
+.sign-out-button {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.sign-out-button:hover {
+    background: #e5e7eb;
+}
+
+.auth-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.auth-modal {
+    max-width: 400px;
+}
+
+.auth-modal h2 {
+    margin: 0 0 20px 0;
+    text-align: center;
+}
+
+.google-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.google-button:hover {
+    background: #f9fafb;
+}
+
+.divider {
+    text-align: center;
+    margin: 16px 0;
+    color: #9ca3af;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.auth-error {
+    color: #dc2626;
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.auth-submit {
+    width: 100%;
+    padding: 12px;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.auth-submit:hover {
+    background: #4338ca;
+}
+
+.toggle-auth {
+    width: 100%;
+    margin-top: 12px;
+    background: none;
+    border: none;
+    color: #4f46e5;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.toggle-auth:hover {
+    text-decoration: underline;
+}
