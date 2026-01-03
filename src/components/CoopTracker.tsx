@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar, CheckCircle2, Circle, Award, Code, Briefcase, Users, BookOpen, StickyNote, X } from 'lucide-react';
 import { weeks } from '../data/weeks';
-import { Category, CategoryConfig, Task, TaskNote, AppState } from '../types';
+import type {Category, CategoryConfig, Task, TaskNote, AppState} from '../types';
 import '../styles/CoopTracker.css';
 
 const STORAGE_KEY = 'coop-tracker-state';
