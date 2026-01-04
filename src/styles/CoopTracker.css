@@ -1043,3 +1043,103 @@
     color: #6b7280;
     margin: 0 0 24px 0;
 }
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sync-indicator {
+    font-size: 14px;
+    color: #10b981;
+    font-weight: 500;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Notification Button */
+.notification-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.notification-button:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+}
+
+.notification-button.active {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.notification-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Task Actions Container */
+.task-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* Timer Toggle Button */
+.timer-toggle-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-toggle-button:hover {
+    background: #f3f4f6;
+}
+
+.timer-toggle-button.active {
+    background: #dbeafe;
+}
+
+.timer-toggle-button.active .timer-icon {
+    color: #2563eb;
+}
+
+.timer-icon {
+    width: 18px;
+    height: 18px;
+    color: #6b7280;
+}
+
+/* Time Badge */
+.time-badge {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-weight: 500;
+    background: #dbeafe;
+    color: #1e40af;
+}

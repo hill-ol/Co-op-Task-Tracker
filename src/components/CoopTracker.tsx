@@ -1,9 +1,10 @@
-// src/components/CoopTracker.tsx
+// src/components/CoopTracker.tsx - UPDATED
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, Code, Briefcase, Users, BookOpen, Award, BookMarked, Eye, EyeOff } from 'lucide-react';
+import { Calendar, Code, Briefcase, Users, BookOpen, Award, BookMarked, Eye, EyeOff, Bell, BellOff } from 'lucide-react';
 import { weeks } from '../data/weeks';
 import type {Category, CategoryConfig, TaskNote, AppState} from '../types';
 import { useFirestore } from '../hooks/useFirestore';
+import { requestNotificationPermission, sendNotification } from '../utils';
 import Auth from './Auth';
 import WeekCard from './WeekCard';
 import StatsView from './StatsView';
@@ -42,10 +43,27 @@ const CoopTracker: React.FC = () => {
         return {};
     });
 
+    const [taskTimeSpent, setTaskTimeSpent] = useState<Record<string, number>>(() => {
+        const savedState = localStorage.getItem(STORAGE_KEY);
+        if (savedState) {
+            try {
+                const state: AppState = JSON.parse(savedState);
+                return state.taskTimeSpent || {};
+            } catch (error) {
+                console.error('Error loading saved state:', error);
+            }
+        }
+        return {};
+    });
+
     const [currentView, setCurrentView] = useState<'calendar' | 'stats' | 'resources'>('calendar');
     const [editingNote, setEditingNote] = useState<string | null>(null);
     const [noteText, setNoteText] = useState<string>('');
     const [hideCompletedWeeks, setHideCompletedWeeks] = useState<boolean>(true);
+    const [activeTimer, setActiveTimer] = useState<string | null>(null);
+    const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(
+        () => Notification.permission === 'granted'
+    );
 
     const categoryConfig: Record<Category, CategoryConfig> = {
         leetcode: { label: 'LeetCode', color: 'orange', icon: Code },
@@ -64,7 +82,7 @@ const CoopTracker: React.FC = () => {
             taskNotes: taskNotes,
             customTasks: [],
             timerSessions: [],
-            taskTimeSpent: {}
+            taskTimeSpent: taskTimeSpent
         };
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -72,7 +90,7 @@ const CoopTracker: React.FC = () => {
         if (user) {
             saveToFirestore(state);
         }
-    }, [completedTasks, taskNotes, user, saveToFirestore]);
+    }, [completedTasks, taskNotes, taskTimeSpent, user, saveToFirestore]);
 
     // Subscribe to Firestore updates
     useEffect(() => {
@@ -81,10 +99,61 @@ const CoopTracker: React.FC = () => {
         const unsubscribe = subscribeToFirestore((data) => {
             setCompletedTasks(new Set(data.completedTasks));
             setTaskNotes(data.taskNotes);
+            setTaskTimeSpent(data.taskTimeSpent || {});
         });
 
         return unsubscribe;
     }, [user, subscribeToFirestore]);
+
+    // Daily notification check
+    useEffect(() => {
+        if (!notificationsEnabled) return;
+
+        const checkDailyProgress = () => {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+            // Don't send notifications on weekends
+            if (dayOfWeek === 0 || dayOfWeek === 6) return;
+
+            // Count incomplete tasks for today
+            let incompleteTasks = 0;
+            weeks.forEach(week => {
+                week.tasks.forEach(task => {
+                    if (!completedTasks.has(task.id)) {
+                        incompleteTasks++;
+                    }
+                });
+            });
+
+            if (incompleteTasks > 0) {
+                sendNotification(
+                    'Co-op Tracker Reminder',
+                    `You have ${incompleteTasks} tasks remaining. Keep up the momentum!`
+                );
+            }
+        };
+
+        // Check at 9 AM daily
+        const now = new Date();
+        const scheduledTime = new Date();
+        scheduledTime.setHours(9, 0, 0, 0);
+
+        // If it's past 9 AM today, schedule for tomorrow
+        if (now > scheduledTime) {
+            scheduledTime.setDate(scheduledTime.getDate() + 1);
+        }
+
+        const timeUntilNotification = scheduledTime.getTime() - now.getTime();
+        const timeout = setTimeout(() => {
+            checkDailyProgress();
+            // Then set up daily interval
+            const interval = setInterval(checkDailyProgress, 24 * 60 * 60 * 1000);
+            return () => clearInterval(interval);
+        }, timeUntilNotification);
+
+        return () => clearTimeout(timeout);
+    }, [notificationsEnabled, completedTasks]);
 
     const toggleTask = (taskId: string): void => {
         setCompletedTasks(prev => {
@@ -139,6 +208,37 @@ const CoopTracker: React.FC = () => {
         });
     };
 
+    const toggleTimer = (taskId: string, e: React.MouseEvent): void => {
+        e.stopPropagation();
+        setActiveTimer(activeTimer === taskId ? null : taskId);
+    };
+
+    const updateTaskTime = (taskId: string, seconds: number): void => {
+        setTaskTimeSpent(prev => ({
+            ...prev,
+            [taskId]: seconds
+        }));
+    };
+
+    const handleNotificationToggle = async (): Promise<void> => {
+        if (!notificationsEnabled) {
+            const granted = await requestNotificationPermission();
+            setNotificationsEnabled(granted);
+            if (granted) {
+                sendNotification(
+                    'Notifications Enabled! 🎉',
+                    'You will receive daily reminders at 9 AM on weekdays.'
+                );
+            }
+        } else {
+            setNotificationsEnabled(false);
+            sendNotification(
+                'Notifications Disabled',
+                'You will no longer receive daily reminders.'
+            );
+        }
+    };
+
     // Filter weeks based on completion status
     const visibleWeeks = useMemo(() => {
         if (!hideCompletedWeeks) return weeks;
@@ -191,6 +291,23 @@ const CoopTracker: React.FC = () => {
                         <div className="header-actions">
                             <Auth user={user} />
                             {syncing && <span className="sync-indicator">☁️ Syncing...</span>}
+                            <button
+                                onClick={handleNotificationToggle}
+                                className={`notification-button ${notificationsEnabled ? 'active' : ''}`}
+                                title={notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+                            >
+                                {notificationsEnabled ? (
+                                    <>
+                                        <Bell className="notification-icon" />
+                                        Notifications On
+                                    </>
+                                ) : (
+                                    <>
+                                        <BellOff className="notification-icon" />
+                                        Enable Reminders
+                                    </>
+                                )}
+                            </button>
                             <div className="progress-display">
                                 <div className="progress-percentage">
                                     {Math.round((stats.completedCount / stats.totalTasks) * 100)}%
@@ -225,7 +342,7 @@ const CoopTracker: React.FC = () => {
                         </button>
                     </div>
 
-                    {/* Hide Completed Weeks Toggle (only show in calendar view) */}
+                    {/* Hide Completed Weeks Toggle */}
                     {currentView === 'calendar' && (
                         <div className="filter-section">
                             <button
@@ -282,6 +399,10 @@ const CoopTracker: React.FC = () => {
                                     onToggleTask={toggleTask}
                                     onOpenNote={openNoteEditor}
                                     onDeleteNote={deleteNote}
+                                    activeTimer={activeTimer}
+                                    onToggleTimer={toggleTimer}
+                                    taskTimeSpent={taskTimeSpent}
+                                    onUpdateTaskTime={updateTaskTime}
                                 />
                             ))
                         )}

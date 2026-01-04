@@ -1,7 +1,8 @@
-// src/components/TaskItem.tsx
+// src/components/TaskItem.tsx - UPDATED
 import React from 'react';
-import { CheckCircle2, Circle, StickyNote, ExternalLink } from 'lucide-react';
-import type {Task, CategoryConfig} from '../types';
+import { CheckCircle2, Circle, StickyNote, ExternalLink, Clock } from 'lucide-react';
+import type { Task, CategoryConfig } from '../types';
+import { formatDuration } from '../utils';
 
 interface TaskItemProps {
     task: Task;
@@ -10,6 +11,9 @@ interface TaskItemProps {
     categoryConfig: CategoryConfig;
     onToggle: () => void;
     onOpenNote: (e: React.MouseEvent) => void;
+    hasTimer: boolean;
+    onToggleTimer: (e: React.MouseEvent) => void;
+    timeSpent?: number;
 }
 
 const TaskItem: React.FC<TaskItemProps> = ({
@@ -18,7 +22,10 @@ const TaskItem: React.FC<TaskItemProps> = ({
                                                hasNote,
                                                categoryConfig,
                                                onToggle,
-                                               onOpenNote
+                                               onOpenNote,
+                                               hasTimer,
+                                               onToggleTimer,
+                                               timeSpent
                                            }) => {
     const Icon = categoryConfig.icon;
 
@@ -56,6 +63,12 @@ const TaskItem: React.FC<TaskItemProps> = ({
                     {task.priority === 'high' && !task.leetcode && (
                         <span className="priority-badge">High Priority</span>
                     )}
+
+                    {timeSpent && timeSpent > 0 && (
+                        <span className="time-badge">
+              ⏱️ {formatDuration(timeSpent)}
+            </span>
+                    )}
                 </div>
 
                 <div className="task-text-wrapper">
@@ -83,44 +96,55 @@ const TaskItem: React.FC<TaskItemProps> = ({
                         Solve on LeetCode
                         </a>
 
-                            {task.leetcode.patterns && task.leetcode.patterns.length > 0 && (
-                                <div className="pattern-tags">
-                                    {task.leetcode.patterns.map((pattern, idx) => (
-                                        <span key={idx} className="pattern-tag">
-                      {pattern}
-                    </span>
-                                    ))}
-                                </div>
-                            )}
+                    {task.leetcode.patterns && task.leetcode.patterns.length > 0 && (
+                        <div className="pattern-tags">
+                    {task.leetcode.patterns.map((pattern, idx) => (
+                        <span key={idx} className="pattern-tag">
+                    {pattern}
+                </span>
+                ))}
+            </div>
+            )}
 
-                            {task.leetcode.companies && task.leetcode.companies.length > 0 && (
-                                <div className="company-tags">
-                                    {task.leetcode.companies.slice(0, 5).map((company, idx) => (
-                                        <span key={idx} className="company-tag">
+            {task.leetcode.companies && task.leetcode.companies.length > 0 && (
+            <div className="company-tags">
+                {task.leetcode.companies.slice(0, 5).map((company, idx) => (
+                    <span key={idx} className="company-tag">
                       {company}
                     </span>
-                                    ))}
-                                    {task.leetcode.companies.length > 5 && (
-                                        <span className="company-tag-more">
+                ))}
+                {task.leetcode.companies.length > 5 && (
+                    <span className="company-tag-more">
                       +{task.leetcode.companies.length - 5} more
                     </span>
-                                    )}
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
+                )}
             </div>
+            )}
+        </>
+    )}
+</div>
+</div>
 
+    <div className="task-actions">
+        {task.category === 'leetcode' && (
             <button
-                onClick={onOpenNote}
-                className={`note-button ${hasNote ? 'has-note' : ''}`}
-                title={hasNote ? 'Edit note' : 'Add note'}
+                onClick={onToggleTimer}
+                className={`timer-toggle-button ${hasTimer ? 'active' : ''}`}
+                title="Timer"
             >
-                <StickyNote className="note-icon" />
+                <Clock className="timer-icon" />
             </button>
-        </div>
-    );
+        )}
+        <button
+            onClick={onOpenNote}
+            className={`note-button ${hasNote ? 'has-note' : ''}`}
+            title={hasNote ? 'Edit note' : 'Add note'}
+        >
+            <StickyNote className="note-icon" />
+        </button>
+    </div>
+</div>
+);
 };
 
 export default TaskItem;

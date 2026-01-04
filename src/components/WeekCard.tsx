@@ -1,7 +1,8 @@
-// src/components/WeekCard.tsx
+// src/components/WeekCard.tsx - UPDATED
 import React from 'react';
 import { StickyNote, X } from 'lucide-react';
 import TaskItem from './TaskItem';
+import Timer from './Timer';
 import type {Week, Task, TaskNote, CategoryConfig, Category} from '../types';
 
 interface WeekCardProps {
@@ -12,6 +13,10 @@ interface WeekCardProps {
     onToggleTask: (taskId: string) => void;
     onOpenNote: (taskId: string, e: React.MouseEvent) => void;
     onDeleteNote: (taskId: string, e: React.MouseEvent) => void;
+    activeTimer: string | null;
+    onToggleTimer: (taskId: string, e: React.MouseEvent) => void;
+    taskTimeSpent: Record<string, number>;
+    onUpdateTaskTime: (taskId: string, seconds: number) => void;
 }
 
 const WeekCard: React.FC<WeekCardProps> = ({
@@ -21,7 +26,11 @@ const WeekCard: React.FC<WeekCardProps> = ({
                                                categoryConfig,
                                                onToggleTask,
                                                onOpenNote,
-                                               onDeleteNote
+                                               onDeleteNote,
+                                               activeTimer,
+                                               onToggleTimer,
+                                               taskTimeSpent,
+                                               onUpdateTaskTime
                                            }) => {
     const completedCount = week.tasks.filter(t => completedTasks.has(t.id)).length;
     const totalTasks = week.tasks.length;
@@ -50,6 +59,7 @@ const WeekCard: React.FC<WeekCardProps> = ({
             <div className="tasks-list">
                 {week.tasks.map((task: Task) => {
                     const hasNote = taskNotes[task.id];
+                    const timeSpent = taskTimeSpent[task.id];
 
                     return (
                         <div key={task.id} className="task-wrapper">
@@ -60,8 +70,21 @@ const WeekCard: React.FC<WeekCardProps> = ({
                                 categoryConfig={categoryConfig[task.category]}
                                 onToggle={() => onToggleTask(task.id)}
                                 onOpenNote={(e) => onOpenNote(task.id, e)}
+                                hasTimer={activeTimer === task.id}
+                                onToggleTimer={(e) => onToggleTimer(task.id, e)}
+                                timeSpent={timeSpent}
                             />
 
+                            {/* Timer */}
+                            {activeTimer === task.id && (
+                                <Timer
+                                    taskId={task.id}
+                                    onTimeUpdate={onUpdateTaskTime}
+                                    initialTime={timeSpent || 0}
+                                />
+                            )}
+
+                            {/* Note Display */}
                             {hasNote && (
                                 <div className="task-note-display">
                                     <div className="note-header">
