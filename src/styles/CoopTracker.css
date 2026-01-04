@@ -985,3 +985,61 @@
     color: #6b7280;
     font-style: italic;
 }
+
+/* Filter Section */
+.filter-section {
+    margin-bottom: 16px;
+}
+
+.filter-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-button:hover {
+    background: #f9fafb;
+    border-color: #4f46e5;
+}
+
+.filter-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Empty State */
+.empty-state {
+    background: white;
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    width: 64px;
+    height: 64px;
+    color: #10b981;
+    margin: 0 auto 16px;
+}
+
+.empty-state h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111827;
+    margin: 0 0 8px 0;
+}
+
+.empty-state p {
+    color: #6b7280;
+    margin: 0 0 24px 0;
+}
